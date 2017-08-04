@@ -12,6 +12,7 @@ const READ=3,WRITE=4,PWM=5,WVCLR=27,WVCRE=49,WVBSY=32,WVAG=28,WVCHA=93;
 const NOIB=99,NB=19,NP=20,NC=21;
 const SLRO=42, SLR=43, SLRC=44, SLRI=94;
 const WVTXM = 100, WVTAT = 101, WVDEL = 50, WVAS = 29;
+const FG = 97;
 // These command types return p3 as int32, otherwise p3 = uint32
 // ie, if (canNeverFailCmdSet.has(cmdValue)) console.log('int32')
 const canNeverFailCmdSet = new Set ([HWVER, PIGPV, BR1, BR2, TICK]);
@@ -593,6 +594,9 @@ that.gpio = function(gpio) {
 			// request take array buffer (this conversion from ZachB on SO)
 			//let arrBuf = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 			request(WVAS, gpio, baud, buf.length, callback, buf);
+		}
+		this.glitchFilter = function(steady) {
+			request(FG, gpio, 0, 0);
 		}
 	
 	}//var gpio
