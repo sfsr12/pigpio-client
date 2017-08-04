@@ -39,7 +39,7 @@ Defaults are host=localhost, port=8888, pipelining=false.  On success, returns p
 
 ## Events
 **'connected'**  Emitted after both command and notification sockets recieve 'connect' from pigpiod.
-**'error'**  Emitted on network socket error (command or notificiation) or when command response error is received without a callback attached.
+**'error'**  Emitted on network socket errors, gpio.notify errors or when pigpio command requested receives an error response and no callback was attached.
 
 ## Methods
 **pi.getInfo()**  Returns useful information about rpi hardware and pigpiod.  
