@@ -75,10 +75,10 @@ This is done by issuing the 'NOIB' (notification open in-band) command to the co
 
 **pi.startNotifications(bits, cb)**  
 **pi.pauseNotifications(cb)**  
-**pi.stopNotifications(id)**  
+**pi.stopNotifications(id, cb)**  
 
 **gpio.notify(callback)** Registers a notification callback for this gpio.  Callback is called whenever the gpio state changes.  Callback arguments are *level* and *tick* where *tick* represents the system's time since boot.  
-**gpio.endNotify()**  Unregisters the notification on gpio. For convenience, a null *tick* value is sent.  Useful for stream objects that wrap the notifier callback.  
+**gpio.endNotify(cb)**  Unregisters the notification on gpio. For convenience, a null *tick* value is sent.  Useful for stream objects that wrap the notifier callback.  
 **gpio.glitchFilter(steady)** Sets a glitch filter on this gpio affecting the levels reported by the notify method.
 
 ### Bit\_Bang\_Serial Methods  
