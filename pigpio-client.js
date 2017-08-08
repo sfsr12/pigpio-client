@@ -251,10 +251,10 @@ commandSocket.once('connect', ()=> {
 							flags = buf.readUInt16LE(i+2),
 							tick = buf.readUInt32LE(i+4),
 							levels = buf.readUInt32LE(i+8);
+							oldLevels = (typeof oldLevels === 'undefined')? levels : oldLevels;
+							let changes = oldLevels ^ levels;
+							oldLevels = levels;
 							for (let nob of notifiers.keys()) {
-								oldLevels = (typeof oldLevels === 'undefined')? levels : oldLevels;
-								let changes = oldLevels ^ levels;
-								oldLevels = levels;
 								if (nob.bits & changes) {
 									nob.func(levels, tick);
 								}
@@ -298,7 +298,7 @@ commandSocket.once('connect', ()=> {
 	var notifiers = new Set();
 	var monitorBits = 0;
 	that.startNotifications = function(bits, cb) {
-		if (notifiers.size = MAX_NOTIFICATIONS) {
+		if (notifiers.size === MAX_NOTIFICATIONS) {
 			that.emit('error', new Error('Notification limit reached, cannot add this notifier'));
 			return null;
 		}
