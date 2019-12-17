@@ -13,17 +13,18 @@ const ERR = SIF.PigpioErrors
 // pigpio supported commands:
 const { BR1, BR2, TICK, HWVER, PIGPV, PUD, MODES, MODEG, READ, WRITE, PWM, WVCLR,
 WVCRE, WVBSY, WVAG, WVCHA, NOIB, NB, NP, NC, SLRO, SLR, SLRC, SLRI, WVTXM, WVTAT,
-
-WVHLT, WVDEL, WVAS, HP, HC, GDC, PFS, FG, SERVO, GPW} = SIF.Commands
+WVHLT, WVDEL, WVAS, HP, HC, GDC, PFS, FG, SERVO, GPW,
+I2CO, I2CC, I2CRD, I2CWD
+} = SIF.Commands
 
 // These command types can not fail, ie, return p3 as positive integer
 const canNeverFailCmdSet = new Set([HWVER, PIGPV, BR1, BR2, TICK])
 
 // These command types have extended command data lengths
-const extReqCmdSet = new Set([WVCHA, WVAG, SLRO, WVAS, HP])
+const extReqCmdSet = new Set([WVCHA, WVAG, SLRO, WVAS, HP, I2CO, I2CWD])
 
 // These command types have extended response data lengths
-const extResCmdSet = new Set([SLR])
+const extResCmdSet = new Set([SLR, I2CRD])
 
 /* pigpio constants */
 const {PUD_OFF, PUD_DOWN, PUD_UP, PI_WAVE_MODE_ONE_SHOT, PI_WAVE_MODE_REPEAT,
