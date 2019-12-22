@@ -11,9 +11,8 @@ const API = SIF.APInames
 const ERR = SIF.PigpioErrors
 
 // pigpio supported commands:
-const { BR1, BR2, TICK, HWVER, PIGPV, PUD, MODES, MODEG, READ, WRITE, PWM, WVCLR,
+const { BR1, BR2, BS1, BS2,BC1,BC2, TICK, HWVER, PIGPV, PUD, MODES, MODEG, READ, WRITE, PWM, WVCLR,
 WVCRE, WVBSY, WVAG, WVCHA, NOIB, NB, NP, NC, SLRO, SLR, SLRC, SLRI, WVTXM, WVTAT,
-
 WVHLT, WVDEL, WVAS, HP, HC, GDC, PFS, FG, SERVO, GPW} = SIF.Commands
 
 // These command types can not fail, ie, return p3 as positive integer
@@ -62,6 +61,7 @@ exports.pigpio = function (pi) {
 
 // Command socket
   var commandSocket = new net.Socket()
+  that.socket = commandSocket;
   commandSocket.name = 'commandSocket'
   commandSocket.on('connect', connectHandler(commandSocket))
   commandSocket.reconnectHandler = returnErrorHandler(commandSocket)
@@ -344,9 +344,14 @@ exports.pigpio = function (pi) {
   })
 
   // helper functions
+  var arrayToBits = array=>{
+    return array.sort((a,b)=>a-b).reduce((p,c)=>p|(1<<c),0)
+  }
+
   var request = (cmd, p1, p2, p3, cb, extArrBuf) => {
     var bufSize = 16
-    var buf = Buffer.from(Uint32Array.from([cmd, p1, p2, p3]).buffer) // basic
+    let uBuf=Uint32Array.from([cmd, p1, p2, p3]);
+    var buf = Buffer.from(uBuf.buffer) // basic
     if (extReqCmdSet.has(cmd)) {
       // following is not true for waveAddSerial!
       // assert.equal(extArrBuf.byteLength, p3, "incorrect p3 or array length");
@@ -354,7 +359,6 @@ exports.pigpio = function (pi) {
       let extBuf = Buffer.from(extArrBuf) // extension
       buf = Buffer.concat([buf, extBuf])
     }
-
     var promise;
     if (typeof cb !== 'function') {
       promise = new Promise((resolve, reject) => {
@@ -367,11 +371,12 @@ exports.pigpio = function (pi) {
         }
       })
     }
-
+  
     // Queue request if request queue is not empty OR callback queue is not empty and pipelining disabled
     if (requestQueue.length > 0 || (callbackQueue.length > 0 && !info.pipelining)) {
       requestQueue.push({buffer: buf, callback: cb})
     } else {
+    
       commandSocket.write(buf)
       callbackQueue.push(cb)
       if (process.env.PIGPIO) {
@@ -610,7 +615,20 @@ exports.pigpio = function (pi) {
   }
 
 /* ___________________________________________________________________________ */
-
+  that.setBank = function(gpios, callback){
+    const bits = arrayToBits(gpios)
+    let uBuf=Uint32Array.from([BS1, bits, 0, 0]);
+    var buf = Buffer.from(uBuf.buffer) // basic
+    commandSocket.write(buf)
+    // return request(BS1, bits,0,0,callback)
+  }
+  that.clearBank=function(gpios,callback){
+    const bits = arrayToBits(gpios)
+    let uBuf=Uint32Array.from([BC1, bits, 0, 0]);
+    var buf = Buffer.from(uBuf.buffer) // basic
+    commandSocket.write(buf)
+    //return request(BC1, bits,0,0,callback)
+  }
   that.gpio = function (gpio) {
     
     var _gpio = function (gpio) {

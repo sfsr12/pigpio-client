@@ -10,6 +10,10 @@ const CMDS = {
   SERVO:  8,  // setServoPulsewidth
   BR1:    10, // bankRead1
   BR2:    11, // (internal)
+  BC1:    12, // bankClear1
+  BC2:    13, // (internal)
+  BS1:    14, // bankSet1
+  BS2:    15, // (internal)  
   TICK:   16, // getCurrentTick
   HWVER:  17, // hwver
   NB:     19, // startNotifications, stopNotifications, notify
